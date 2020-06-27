@@ -16,6 +16,8 @@ class WeatherCell: UICollectionViewCell{
     var dateLabel = SPLabel()
     var degreeLabel = SPLabel()
     var imageView = SPImageView()
+    
+    var iconColor: UIColor!
 
 
     override func awakeFromNib() {

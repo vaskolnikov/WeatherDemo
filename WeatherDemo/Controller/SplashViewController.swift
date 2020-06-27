@@ -39,6 +39,8 @@ class SplashViewController: UIViewController {
         LocationManager.shared.locationDelegate = self
         LocationManager.shared.getLocation()
         
+     
+        
     }
     
     func showAlert() {
@@ -58,11 +60,16 @@ class SplashViewController: UIViewController {
             let vc  = WeatherViewController(networkManager:self.networkManager)
             vc.fethcWeather(location)
             self.navigationController?.pushViewController(vc, animated: true)
+            // window?.rootViewController = UINavigationController(rootViewController:SplashViewController(networkManager: networkManager))
             //return
+            //UIApplication.shared.keyWindow?.rootViewController = vc
+
 
          }
 
     }
+    
+
 }
 
 extension SplashViewController : locationFetched {
@@ -70,7 +77,8 @@ extension SplashViewController : locationFetched {
         
         if (status == .authorizedAlways)  || ( status == .authorizedWhenInUse ) {
             //goDashBoard(location: userLocation!)
-
+            goDashBoard(location: self.userLocation!)
+            return
         } else {
             showAlert()
         }
@@ -80,6 +88,7 @@ extension SplashViewController : locationFetched {
     @objc func locationAddressString(locationFetched: String, lat: CLLocationDegrees, lon: CLLocationDegrees) {
         if let location = LocationManager.shared.currentLocation,  LocationManager.shared.currentLocation != nil {
             self.userLocation = location
+            //print(LocationManager.shared.currentLocation)
             goDashBoard(location: location)
             return
 

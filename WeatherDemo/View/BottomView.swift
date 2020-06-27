@@ -148,9 +148,9 @@ class BottomView : UIView {
 
 
     
-    func toggleTheme() {
-        
-    }
+//    func toggleTheme() {
+//        
+//    }
 }
 
 

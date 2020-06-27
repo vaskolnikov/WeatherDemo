@@ -39,7 +39,8 @@ class WeatherViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = SPNativeColors.customGray
+        //view.backgroundColor = SPNativeColors.customGray
+        toggleTheme()
      
          
          view.addSubview(loader)
@@ -49,11 +50,18 @@ class WeatherViewController: UIViewController {
 //        
         setupUI()
         addStatusBarBackground()
+        print(view.frame.height)
     }
     
     private func setupUI() {
-        topView = TopView(frame: CGRect(x: 0, y:0, width: view.frame.width, height: view.frame.height - 200))
-        //topView.backgroundColor = UIColor.black
+        
+        var height:CGFloat = 0
+        if view.frame.height < 668 {
+            height = 250
+        } else {
+            height = 200
+        }
+        topView = TopView(frame: CGRect(x: 0, y:0, width: view.frame.width, height: view.frame.height - height))
         bottomView = BottomView(frame: CGRect(x: 0, y: view.frame.height - 220, width: view.frame.width, height: 200))
         bottomView.delegate = self
         view.addSubview(topView)
@@ -88,7 +96,7 @@ class WeatherViewController: UIViewController {
                 //print(result)
                 if let city = result.city {
                     self.city = city
-                    self.topView.city = self.city?.name
+                    self.topView.city = self.city?.name ?? "No city"
                 }
                 self.data = result.data
                 self.topView.degree = self.data[0].main.getDegree()

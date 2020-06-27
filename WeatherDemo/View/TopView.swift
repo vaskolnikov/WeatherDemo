@@ -11,6 +11,8 @@ import UIKit
 class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate {
     
     var selectedRow = 0
+    let h :CGFloat = 0.66 // for collectionview height to be 2/3 of the view
+    let y :CGFloat = 0.33 // collectionview y position
 
     fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
@@ -40,7 +42,7 @@ class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     
     lazy var degreeLabel: SPLabel = {
        let l = SPLabel()
-        l.frame = CGRect(x: self.frame.width - 250, y: 70, width: 240, height: 100)
+        l.frame = CGRect(x: self.frame.width - 250, y: 70, width: 240, height: self.frame.height * y - 70)
         l.font = UIFont.system(weight: .bold, size: 66)
         l.textAlignment = .right
         return l
@@ -64,12 +66,17 @@ class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     lazy var collectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        let cv = UICollectionView(frame: CGRect(x: 0, y: 220, width: self.frame.width, height: 250), collectionViewLayout: layout)
+      
+
+        let cv = UICollectionView(frame: CGRect(x: 0,
+                                                y: self.frame.height * y,
+                                                width: self.frame.width,
+                                                height: self.frame.height * h),
+                                  collectionViewLayout: layout)
         cv.register(WeatherCell.self, forCellWithReuseIdentifier: weatherCell)
         cv.delegate = self
         cv.dataSource = self
         cv.showsHorizontalScrollIndicator = false
-        cv.backgroundColor = SPNativeColors.customGray
         
         if let layout = cv.collectionViewLayout as? UICollectionViewFlowLayout {
              layout.minimumLineSpacing = 10
@@ -77,8 +84,8 @@ class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
              layout.sectionInset = sectionInsets
              layout.scrollDirection = .horizontal
          }
-         //cv.contentInset = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
-         cv.isPagingEnabled = false
+        cv.isPagingEnabled = false
+        cv.toggleThemed()
         return cv
     }()
     
@@ -113,13 +120,12 @@ class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
         self.addSubview(dateLabel)//
         self.addSubview(degreeLabel)//dateLabel
         self.addSubview(collectionView)
+        toggleTheme()
  
     }
 
     
-    func toggleTheme() {
-        
-    }
+    
 
     func collectionView(_ collectionView: UICollectionView, numberOfSections section: Int) -> Int {
         return 1
@@ -132,39 +138,39 @@ class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: weatherCell, for: indexPath) as! WeatherCell
         let weatherList = self.list[indexPath.row]
-
+        var isSelected: Bool = false
+       
         if selectedRow == indexPath.row {
-            cell.layer.cornerRadius = 30
-            cell.backgroundColor = SPNativeColors.white
-            cell.alpha = 1.0
+
+            isSelected = true
           
             cell.imageView.frame = CGRect(x: (cell.frame.width/2) - 40 , y: (cell.frame.height / 2) - 40, width: 80, height: 80)
             cell.degreeLabel.frame = CGRect(x: (cell.frame.width/2) - 40 , y: cell.frame.height - 50, width: 80, height: 20)
             cell.hourView.frame = CGRect(x: (cell.frame.width/2) - 40 , y: 20, width: 80, height: 40)
             cell.hourLbael.frame = CGRect(x: 10, y: 5, width: cell.hourView.frame.width - 20, height: 30)
-            cell.hourView.backgroundColor = App.appColor
-            cell.degreeLabel.textColor = App.normal
-            cell.hourLbael.textColor = App.normal
-            cell.imageView.image = weatherList.weather[0].getImage(color: .black)
-            
+
        } else {
-           
-            cell.layer.borderWidth = 0
-            cell.layer.cornerRadius = 0
-            cell.backgroundColor = .clear
-            cell.alpha = 0.6
-      
+           isSelected = false
+
             cell.imageView.frame = CGRect(x: (cell.frame.width/2) - 20 , y: (cell.frame.height / 2) - 20, width: 40, height: 40)
             cell.degreeLabel.frame = CGRect(x: (cell.frame.width/2) - 40 , y: cell.frame.height - 60, width: 80, height: 20)
             cell.hourView.frame = CGRect(x: (cell.frame.width/2) - 35 , y: 20, width: 70, height: 40)
             cell.hourLbael.frame = CGRect(x: 7.5, y: 5, width: cell.hourView.frame.width - 20, height: 30)
-            cell.degreeLabel.textColor = App.faded
-            cell.hourLbael.textColor = App.faded
-            cell.imageView.image = weatherList.weather[0].getImage(color: App.faded)
+
 
        }
+        cell.toggleThemed(isSelected: isSelected)
+        
+        if selectedRow == indexPath.row {
+            cell.imageView.image = weatherList.weather[0].getImage(color: cell.iconColor)
+        } else {
+            cell.imageView.image = weatherList.weather[0].getImage(color: cell.iconColor)
+
+        }
         
         cell.setData(data: weatherList)
+        
+
         return cell
 
     }

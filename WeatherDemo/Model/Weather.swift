@@ -34,15 +34,15 @@ extension WeatherApiResponse: Decodable {
         message = try container.decode(Int.self, forKey: .message)
         cnt = try container.decode(Int.self, forKey: .cnt)
         data = try container.decode([List].self, forKey: .data)
-        city = try container.decode(City.self, forKey: .city)
+        city = try container.decodeIfPresent(City.self, forKey: .city)
     }
 }
 
 struct City:Decodable {
-    let id: Int
-    let name: String
+    let id: Int?
+    let name: String?
     //let coord: Coord
-    let country: String
+    let country: String?
     //let population, timezone, sunrise, sunset: Int
 }
 
@@ -91,81 +91,36 @@ struct List:Decodable {
         weather = try container.decode([Weather].self, forKey: .weather)
         dateTime = try container.decode(String.self, forKey: .dateTime)
     }
-
-//    
+    
     func getMonthWithName() -> String {
-        var date = ""
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "tr_TR")
-
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        if let date1 = formatter.date(from: self.dateTime){
-             formatter.dateFormat = "MMM d, yyyy EEEE"
-             let date2 = formatter.string(from: date1)
-             let date3 = formatter.date(from: date2)
-             let date4 = formatter.string(from: date3!)
-             date = date4
-        }
-        return date
-
+        return convertToFormat(date: self.dateTime, dateFormat: "MMM d, yyyy EEEE")
     }
     
-    
     func getHour() -> String {
-        var date = ""
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "tr_TR")
-
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        if let date1 = formatter.date(from: self.dateTime){
-             formatter.dateFormat = "HH:mm"
-             let date2 = formatter.string(from: date1)
-             let date3 = formatter.date(from: date2)
-             let date4 = formatter.string(from: date3!)
-             date = date4
-        }
-        return date
-
+        return convertToFormat(date: self.dateTime, dateFormat: "HH:mm")
     }
     
     func getDate() -> String {
-        var date = ""
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "tr_TR")
-
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        if let date1 = formatter.date(from: self.dateTime){
-             formatter.dateFormat = "yyyy-MM-dd"
-             let date2 = formatter.string(from: date1)
-             let date3 = formatter.date(from: date2)
-             let date4 = formatter.string(from: date3!)
-             date = date4
-        }
-        return date
-
+        return convertToFormat(date: self.dateTime, dateFormat: "yyyy-MM-dd")
     }
-    
     
     func getDay() -> String {
-        var date = ""
+        return convertToFormat(date: self.dateTime, dateFormat: "E")
+    }
+    
+    func convertToFormat(date: String, dateFormat: String) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "tr_TR")
-
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        if let date1 = formatter.date(from: self.dateTime){
-             formatter.dateFormat = "E"
-             let date2 = formatter.string(from: date1)
-             let date3 = formatter.date(from: date2)
-             let date4 = formatter.string(from: date3!)
-             date = date4
-        }
-        return date
-
+         let date1 = formatter.date(from: date)
+         formatter.dateFormat = dateFormat
+         let date2 = formatter.string(from: date1!)
+         let date3 = formatter.date(from: date2)
+         let date4 = formatter.string(from: date3!)
+        return date4
     }
-
-
-    
 }
+
 func ==(l: List, r: List) -> Bool {
     return l.dt == r.dt
 }
@@ -243,7 +198,6 @@ struct Weather:Decodable {
         return icon
 
     }
-    
         
 }
 
