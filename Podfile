@@ -7,6 +7,7 @@ target 'WeatherDemo' do
 
   # Pods for WeatherDemo
   pod 'FontAwesome.swift'
+  pod 'JGProgressHUD'
 
 
 end

@@ -8,21 +8,16 @@
 
 import UIKit
 import CoreLocation
+import JGProgressHUD
 
 class WeatherViewController: UIViewController {
-    
-    lazy var loader: UIActivityIndicatorView = {
-       let l = UIActivityIndicatorView()
-        l.center = view.center
-        l.style = .gray
-        l.color = .black
-        l.backgroundColor = SPNativeColors.purple
-        return l
-    }()
 
     var networkManager: NetworkManager!
     var city: City?
     var data: [List] = []
+    
+    let hud = JGProgressHUD(style: .dark)
+ 
     
     var topView: TopView!
     var bottomView: BottomView!
@@ -35,22 +30,13 @@ class WeatherViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-        
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        //view.backgroundColor = SPNativeColors.customGray
         toggleTheme()
-     
-         
-         view.addSubview(loader)
-
-//        LocationManager.shared.locationDelegate = self
-//        LocationManager.shared.getLocation()
-//        
         setupUI()
         addStatusBarBackground()
-        print(view.frame.height)
+        //print(view.frame.height)
     }
     
     private func setupUI() {
@@ -66,7 +52,6 @@ class WeatherViewController: UIViewController {
         bottomView.delegate = self
         view.addSubview(topView)
         view.addSubview(bottomView)
-
         
     }
     
@@ -85,7 +70,8 @@ class WeatherViewController: UIViewController {
     }
     
     func fethcWeather(_ location:CLLocation){
-        loader.startAnimating()
+        hud.textLabel.text = "Loading"
+        hud.show(in: self.view)
 
         networkManager.getWeather(latitude: (location.coordinate.latitude), longitude: (location.coordinate.longitude)) { [weak self] (result, error) in
             guard let self = self else { return }
@@ -104,7 +90,7 @@ class WeatherViewController: UIViewController {
                 self.filterData(data: self.data)
                 DispatchQueue.main.async {
                     self.bottomView.setData(data: self.data)
-                    self.loader.stopAnimating()
+                    self.hud.dismiss(afterDelay: 0.83)
                 }
             }
         }
@@ -116,31 +102,14 @@ class WeatherViewController: UIViewController {
         formatter.dateFormat = "YYYY-MM-dd"
         let nowString = formatter.string(from: Date())
         let results = data.filter { $0.getDate() == nowString }
-
         self.topView.list = results
     }
     
-    
-    
     func getStatusBarHeight() ->CGFloat {
         let barHeight: CGFloat = UIApplication.shared.statusBarFrame.size.height
-       // let displayWidth: CGFloat = self.view.frame.width
-        //let displayHeight: CGFloat = self.view.frame.height
         return barHeight
     }
-
-
 }
-
-//extension WeatherViewController : locationFetched {
-//    
-//    @objc func locationAddressString(locationFetched: String, lat: CLLocationDegrees, lon: CLLocationDegrees) {
-//        if let location = LocationManager.shared.currentLocation,  LocationManager.shared.currentLocation != nil {
-//            fethcWeather(location)
-//        }
-//    }
-//}
-
 
 extension WeatherViewController: BottomViewDelegate {
     func reload(data: List) {
@@ -148,8 +117,6 @@ extension WeatherViewController: BottomViewDelegate {
         let filteredItems = self.data.filter { $0.getDate() == data.getDate() }
         self.topView.list = filteredItems
         self.topView.degree = filteredItems[0].main.getDegree()
-        
     }
-    
 }
 

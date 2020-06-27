@@ -8,12 +8,15 @@
 
 import UIKit
 import CoreLocation
+import JGProgressHUD
+
 
 class SplashViewController: UIViewController {
     
     var networkManager: NetworkManager!
-    var loader: UIActivityIndicatorView!
     var userLocation: CLLocation?
+    var isPushed: Bool = false
+    let hud = JGProgressHUD(style: .dark)
 
     init(networkManager: NetworkManager) {
           super.init(nibName: nil, bundle: nil)
@@ -28,18 +31,12 @@ class SplashViewController: UIViewController {
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         view.backgroundColor = App.appColor
-        loader = UIActivityIndicatorView()
-        loader.center = view.center
-        loader.style = .gray
-        loader.color = .black
-        loader.startAnimating()
-        
-        view.addSubview(loader)
+
+        hud.textLabel.text = "Konumunuz aliniyor"
+        hud.show(in: self.view)
 
         LocationManager.shared.locationDelegate = self
         LocationManager.shared.getLocation()
-        
-     
         
     }
     
@@ -56,19 +53,18 @@ class SplashViewController: UIViewController {
 
     func goDashBoard(location: CLLocation) {
         delay(0.5) {
-            self.loader.stopAnimating()
-            let vc  = WeatherViewController(networkManager:self.networkManager)
-            vc.fethcWeather(location)
-            self.navigationController?.pushViewController(vc, animated: true)
+            self.hud.dismiss(afterDelay: 0)
+            if !self.isPushed{
+                let vc  = WeatherViewController(networkManager:self.networkManager)
+                vc.fethcWeather(location)
+                self.navigationController?.pushViewController(vc, animated: true)
+                self.isPushed = true
+
+            }
             // window?.rootViewController = UINavigationController(rootViewController:SplashViewController(networkManager: networkManager))
-            //return
             //UIApplication.shared.keyWindow?.rootViewController = vc
-
-
          }
-
     }
-    
 
 }
 
@@ -76,21 +72,17 @@ extension SplashViewController : locationFetched {
      @objc func locationManagerStatus(status: CLAuthorizationStatus) {
         
         if (status == .authorizedAlways)  || ( status == .authorizedWhenInUse ) {
-            //goDashBoard(location: userLocation!)
             goDashBoard(location: self.userLocation!)
-            return
         } else {
             showAlert()
         }
     }
 
-    
     @objc func locationAddressString(locationFetched: String, lat: CLLocationDegrees, lon: CLLocationDegrees) {
         if let location = LocationManager.shared.currentLocation,  LocationManager.shared.currentLocation != nil {
             self.userLocation = location
             //print(LocationManager.shared.currentLocation)
             goDashBoard(location: location)
-            return
 
         }
     }

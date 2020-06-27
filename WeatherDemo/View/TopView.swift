@@ -141,35 +141,28 @@ class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
         var isSelected: Bool = false
        
         if selectedRow == indexPath.row {
-
             isSelected = true
-          
             cell.imageView.frame = CGRect(x: (cell.frame.width/2) - 40 , y: (cell.frame.height / 2) - 40, width: 80, height: 80)
             cell.degreeLabel.frame = CGRect(x: (cell.frame.width/2) - 40 , y: cell.frame.height - 50, width: 80, height: 20)
             cell.hourView.frame = CGRect(x: (cell.frame.width/2) - 40 , y: 20, width: 80, height: 40)
             cell.hourLbael.frame = CGRect(x: 10, y: 5, width: cell.hourView.frame.width - 20, height: 30)
-
-       } else {
+        } else {
            isSelected = false
-
             cell.imageView.frame = CGRect(x: (cell.frame.width/2) - 20 , y: (cell.frame.height / 2) - 20, width: 40, height: 40)
             cell.degreeLabel.frame = CGRect(x: (cell.frame.width/2) - 40 , y: cell.frame.height - 60, width: 80, height: 20)
             cell.hourView.frame = CGRect(x: (cell.frame.width/2) - 35 , y: 20, width: 70, height: 40)
             cell.hourLbael.frame = CGRect(x: 7.5, y: 5, width: cell.hourView.frame.width - 20, height: 30)
-
-
-       }
+        }
+        
         cell.toggleThemed(isSelected: isSelected)
         
         if selectedRow == indexPath.row {
             cell.imageView.image = weatherList.weather[0].getImage(color: cell.iconColor)
         } else {
             cell.imageView.image = weatherList.weather[0].getImage(color: cell.iconColor)
-
         }
         
         cell.setData(data: weatherList)
-        
 
         return cell
 
@@ -189,7 +182,6 @@ class TopView : UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        
         if indexPath.row == selectedRow {
             return CGSize(width: (self.frame.width / 2) - 50, height: 250)//CGSize(width: 200, height: collectionView.frame.height - 50)
         } else {

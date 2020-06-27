@@ -1,16 +1,20 @@
 PODS:
   - FontAwesome.swift (1.9.0)
+  - JGProgressHUD (2.1)
 
 DEPENDENCIES:
   - FontAwesome.swift
+  - JGProgressHUD
 
 SPEC REPOS:
   trunk:
     - FontAwesome.swift
+    - JGProgressHUD
 
 SPEC CHECKSUMS:
   FontAwesome.swift: a403b88cec950511745ba8f2decd1b6a07346d13
+  JGProgressHUD: aa403e9a5b45cae98903c4600cccdd98c0c3ec90
 
-PODFILE CHECKSUM: 8eeede87cc0c7d250ea2f5b174f7c2c274a82196
+PODFILE CHECKSUM: a08e4ca6b879488a640c989b8dba8fcb859e0661
 
 COCOAPODS: 1.9.0
